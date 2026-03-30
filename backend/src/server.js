@@ -56,13 +56,6 @@ app.get('/health', (req, res) => {
   res.status(200).json({ ok: true });
 });
 
-app.post('/webhook', (req, res) => {
-  console.log('Webhook route hit');
-  console.log('Headers:', req.headers);
-  console.log('Body:', JSON.stringify(req.body));
-  res.status(200).json({ received: true });
-});
-
 function getTrackedWallets() {
   return readJson(walletsFile, []);
 }
