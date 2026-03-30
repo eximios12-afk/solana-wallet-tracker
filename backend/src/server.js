@@ -222,10 +222,13 @@ app.post('/api/admin/sync-webhook', async (req, res) => {
   res.json(syncResult);
 });
 
-app.post('/webhook', async (req, res) => {
+
+    app.post('/webhook', async (req, res) => {
+  console.log("🔥 WEBHOOK HIT FROM HELIUS");
+  console.log("Headers:", req.headers);
+  console.log("Body:", JSON.stringify(req.body));
+
   const incomingSecret = req.header('authorization') || req.header('x-webhook-secret') || '';
-  if (!WEBHOOK_SECRET || incomingSecret !== WEBHOOK_SECRET) {
-    return res.status(401).json({ error: 'Unauthorized webhook request.' });
   }
 
   try {
