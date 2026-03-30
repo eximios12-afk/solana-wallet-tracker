@@ -51,6 +51,18 @@ const io = new SocketIOServer(server, {
 app.use(cors({ origin: CLIENT_ORIGIN }));
 app.use(express.json({ limit: '2mb' }));
 
+app.get('/health', (req, res) => {
+  console.log('Health route hit');
+  res.status(200).json({ ok: true });
+});
+
+app.post('/webhook', (req, res) => {
+  console.log('Webhook route hit');
+  console.log('Headers:', req.headers);
+  console.log('Body:', JSON.stringify(req.body));
+  res.status(200).json({ received: true });
+});
+
 function getTrackedWallets() {
   return readJson(walletsFile, []);
 }
