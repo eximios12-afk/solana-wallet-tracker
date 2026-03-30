@@ -223,17 +223,23 @@ app.post('/api/admin/sync-webhook', async (req, res) => {
 });
 
 
-    app.post('/webhook', async (req, res) => {
-  console.log("🔥 WEBHOOK HIT FROM HELIUS");
-  console.log("Headers:", req.headers);
-  console.log("Body:", JSON.stringify(req.body));
+app.post('/webhook', async (req, res) => {
+  console.log('🔥 WEBHOOK HIT FROM HELIUS');
+  console.log('Headers:', req.headers);
+  console.log('Body:', JSON.stringify(req.body));
 
-  const incomingSecret = req.header('authorization') || req.header('x-webhook-secret') || '';
+  const incomingSecret =
+    req.header('authorization') || req.header('x-webhook-secret') || '';
+
+  if (!WEBHOOK_SECRET || incomingSecret !== WEBHOOK_SECRET) {
+    return res.status(401).json({ error: 'Unauthorized webhook request.' });
   }
 
   try {
     const wallets = getTrackedWallets();
     const parsed = parseWebhookPayload(req.body, wallets, MIN_SOL);
+
+    console.log('Parsed buys:', parsed.length);
 
     if (!parsed.length) {
       return res.json({ ok: true, buysAdded: 0 });
@@ -256,6 +262,8 @@ app.post('/api/admin/sync-webhook', async (req, res) => {
     const current = getBuyHistory();
     const existingIds = new Set(current.map((item) => item.id));
     const uniqueNewBuys = enriched.filter((item) => !existingIds.has(item.id));
+
+    console.log('Unique new buys:', uniqueNewBuys.length);
 
     if (!uniqueNewBuys.length) {
       return res.json({ ok: true, buysAdded: 0, deduped: true });
